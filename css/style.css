@@ -7012,11 +7012,15 @@ header .navbar-brand {
   padding: 30px 0;
   display: inline-block;
   font-size: 0;
+  
 }
 header .navbar-brand .default-logo {
   visibility: visible;
   opacity: 1;
-  width: auto;
+  width: 100%;
+
+  
+  
 }
 header .navbar-brand .alt-logo, header .navbar-brand .mobile-logo {
   visibility: hidden;
