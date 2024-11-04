@@ -19991,6 +19991,8 @@
     position: relative;
     left: auto;
     top: auto;
+    width: 250px;
+    height: auto;
     transform: none;
     float: left;
   }

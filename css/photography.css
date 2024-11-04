@@ -31,7 +31,7 @@ a, a:hover {
 }
 /* header */ 
 header .navbar-brand img {
-    max-height: 59px;
+    height: 1300px;
 }
 header .widget-text {
     font-size: 15px;
