@@ -19,6 +19,13 @@ body{
 a, a:hover {
     color: var(--dark-gray);
 }
+.scaled-image {
+    max-height: 1250px;
+    width: auto;
+    height: auto;
+    object-fit: cover;
+    object-position: top;
+}
 /* custom cursor */
 .custom-cursor .circle-cursor-inner {
     background-color: var(--dark-gray);
