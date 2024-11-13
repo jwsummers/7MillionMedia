@@ -1,4 +1,3 @@
-// netlify/functions/contact.js
 const sgMail = require('@sendgrid/mail');
 
 // Initialize SendGrid with your API key
@@ -12,7 +11,18 @@ exports.handler = async function(event, context) {
         };
     }
 
-    const { name, email, comment } = JSON.parse(event.body);
+    let parsedBody;
+    try {
+        parsedBody = JSON.parse(event.body); // Parse JSON body safely
+    } catch (error) {
+        console.error("JSON parsing error:", error);
+        return {
+            statusCode: 400,
+            body: JSON.stringify({ message: "Invalid JSON format" }), // Inform client of error
+        };
+    }
+
+    const { name, email, comment } = parsedBody;
 
     // Define email content
     const message = {
@@ -32,7 +42,7 @@ exports.handler = async function(event, context) {
             body: JSON.stringify({ message: "Your message has been sent successfully!" }),
         };
     } catch (error) {
-        console.error(error);
+        console.error("SendGrid error:", error);
         return {
             statusCode: 500,
             body: JSON.stringify({ message: "Failed to send message" }),
