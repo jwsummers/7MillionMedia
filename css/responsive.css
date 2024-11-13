@@ -1169,6 +1169,14 @@
     line-height: initial;
   }
 }
+
+@media(max-width: 485px){
+  .sm-fs-40 {
+    font-size: 2.0rem;
+    line-height: 2.5rem;
+  }
+}
+
 @media (max-width: 575px) {
   /* Font size */
   .xs-fs-0 {
