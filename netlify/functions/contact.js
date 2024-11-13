@@ -17,7 +17,7 @@ exports.handler = async function(event, context) {
     // Define email content
     const message = {
         to: 'Mpreston@7millionmedia.com',
-        from: 'noreply@7millionmedia.com',
+        from: 'Mpreston@7millionmedia.com',
         subject: `New Contact Form Submission from ${name}`,
         text: `Name: ${name}\nEmail: ${email}\nMessage: ${comment}`,
         html: `<p><strong>Name:</strong> ${name}</p>
