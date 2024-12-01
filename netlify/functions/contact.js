@@ -11,18 +11,24 @@ exports.handler = async function(event, context) {
         };
     }
 
-    let parsedBody;
-    try {
-        parsedBody = JSON.parse(event.body); // Parse JSON body safely
-    } catch (error) {
-        console.error("JSON parsing error:", error);
-        return {
-            statusCode: 400,
-            body: JSON.stringify({ message: "Invalid JSON format" }), // Inform client of error
-        };
+    let body;
+    if (event.headers['content-type'] === 'application/x-www-form-urlencoded') {
+        // Decode URL-encoded body
+        body = Object.fromEntries(new URLSearchParams(event.body));
+    } else {
+        // Assume JSON
+        body = JSON.parse(event.body);
     }
 
-    const { name, email, comment } = parsedBody;
+    const { name, email, comment } = body;
+
+    // Validate fields
+    if (!name || !email || !comment) {
+        return {
+            statusCode: 400,
+            body: JSON.stringify({ message: "All fields are required" }),
+        };
+    }
 
     // Define email content
     const message = {
@@ -42,7 +48,7 @@ exports.handler = async function(event, context) {
             body: JSON.stringify({ message: "Your message has been sent successfully!" }),
         };
     } catch (error) {
-        console.error("SendGrid error:", error);
+        console.error(error);
         return {
             statusCode: 500,
             body: JSON.stringify({ message: "Failed to send message" }),
