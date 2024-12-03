@@ -1,22 +1,22 @@
 document.getElementById("contactForm").addEventListener("submit", async function(event) {
-    event.preventDefault(); // Prevent the default form submission
+    event.preventDefault();
 
-    const form = this; // Reference to the form element
+    const form = this;
 
-    // Get the reCAPTCHA token
+    console.log("reCAPTCHA script is ready.");
     grecaptcha.ready(async function() {
         try {
             const token = await grecaptcha.execute("6LdZf5EqAAAAAIfyoFf59ZWBjSemCDpxaA5GSY6C", { action: "submit" });
             console.log("reCAPTCHA Token:", token);
 
-            // Add the token to the form data
+            // Add the token to the hidden input field
+            document.getElementById("recaptchaToken").value = token;
+
+            // Collect form data
             const formData = new FormData(form);
-            formData.append("recaptchaToken", token);
-            
-            // Convert form data to JSON
             const data = Object.fromEntries(formData.entries());
 
-            // Send form data to the serverless function
+            // Send the form data
             const response = await fetch(form.action, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -30,8 +30,6 @@ document.getElementById("contactForm").addEventListener("submit", async function
                 formResponse.textContent = result.message;
                 formResponse.classList.remove("d-none");
                 formResponse.classList.add("alert", "alert-success");
-
-                // Clear the form fields
                 form.reset();
             } else {
                 formResponse.textContent = result.message || "An error occurred.";
