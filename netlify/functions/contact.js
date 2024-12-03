@@ -1,5 +1,6 @@
 const sgMail = require('@sendgrid/mail');
 const querystring = require('querystring');
+const axios = require('axios');
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
@@ -13,7 +14,35 @@ exports.handler = async (event) => {
 
     try {
         // Parse URL-encoded form data
-        const { name, email, comment } = querystring.parse(event.body);
+        const { name, email, comment, website, recaptchaToken } = querystring.parse(event.body);
+
+        // Honeypot Validation: Reject if the hidden "website" field is filled
+        if (website) {
+            return {
+                statusCode: 400,
+                body: JSON.stringify({ message: 'Spam detected!' }),
+            };
+        }
+
+        // reCAPTCHA Validation
+        const recaptchaSecret = process.env.RECAPTCHA_SECRET_KEY;
+        const recaptchaResponse = await axios.post(
+            `https://www.google.com/recaptcha/api/siteverify`,
+            {},
+            {
+                params: {
+                    secret: recaptchaSecret,
+                    response: recaptchaToken,
+                },
+            }
+        );
+
+        if (!recaptchaResponse.data.success) {
+            return {
+                statusCode: 400,
+                body: JSON.stringify({ message: 'reCAPTCHA validation failed. Please try again.' }),
+            };
+        }
 
         // Set up the email content
         const msg = {

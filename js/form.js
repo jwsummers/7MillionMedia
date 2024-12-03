@@ -1,38 +1,48 @@
 document.getElementById("contactForm").addEventListener("submit", async function(event) {
     event.preventDefault(); // Prevent the default form submission
 
-    // Collect form data
-    const formData = new FormData(this);
-    const data = Object.fromEntries(formData.entries());
+    const form = this; // Reference to the form element
 
-    // Send form data to the serverless function
-    try {
-        const response = await fetch(this.action, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data),
-        });
+    // Get the reCAPTCHA token
+    grecaptcha.ready(async function() {
+        try {
+            const token = await grecaptcha.execute("6LdZf5EqAAAAAIfyoFf59ZWBjSemCDpxaA5GSY6C", { action: "submit" });
 
-        const result = await response.json();
-        const formResponse = document.getElementById("formResponse");
+            // Add the token to the form data
+            const formData = new FormData(form);
+            formData.append("recaptchaToken", token);
 
-        if (response.ok) {
-            formResponse.textContent = result.message;
-            formResponse.classList.remove("d-none");
-            formResponse.classList.add("alert", "alert-success");
+            // Convert form data to JSON
+            const data = Object.fromEntries(formData.entries());
 
-            // Clear the form fields
-            this.reset();
-        } else {
-            formResponse.textContent = result.message || "An error occurred.";
+            // Send form data to the serverless function
+            const response = await fetch(form.action, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+            });
+
+            const result = await response.json();
+            const formResponse = document.getElementById("formResponse");
+
+            if (response.ok) {
+                formResponse.textContent = result.message;
+                formResponse.classList.remove("d-none");
+                formResponse.classList.add("alert", "alert-success");
+
+                // Clear the form fields
+                form.reset();
+            } else {
+                formResponse.textContent = result.message || "An error occurred.";
+                formResponse.classList.remove("d-none");
+                formResponse.classList.add("alert", "alert-danger");
+            }
+        } catch (error) {
+            console.error("Form submission error:", error);
+            const formResponse = document.getElementById("formResponse");
+            formResponse.textContent = "An error occurred while submitting the form.";
             formResponse.classList.remove("d-none");
             formResponse.classList.add("alert", "alert-danger");
         }
-    } catch (error) {
-        console.error("Form submission error:", error);
-        const formResponse = document.getElementById("formResponse");
-        formResponse.textContent = "An error occurred while submitting the form.";
-        formResponse.classList.remove("d-none");
-        formResponse.classList.add("alert", "alert-danger");
-    }
+    });
 });
