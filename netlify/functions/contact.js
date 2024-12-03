@@ -13,14 +13,33 @@ exports.handler = async (event) => {
     }
 
     try {
-        // Parse URL-encoded form data
+        // Parse form data
         const { name, email, comment, website, recaptchaToken } = querystring.parse(event.body);
 
-        // Honeypot Validation: Reject if the hidden "website" field is filled
+        // Honeypot check
         if (website) {
+            console.warn('Honeypot triggered!');
             return {
                 statusCode: 400,
                 body: JSON.stringify({ message: 'Spam detected!' }),
+            };
+        }
+
+        // Validate required fields
+        if (!name || !email || !comment || !recaptchaToken) {
+            console.warn('Missing fields:', { name, email, comment, recaptchaToken });
+            return {
+                statusCode: 400,
+                body: JSON.stringify({ message: 'All fields are required' }),
+            };
+        }
+
+        // Validate email format
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            console.warn('Invalid email address:', email);
+            return {
+                statusCode: 400,
+                body: JSON.stringify({ message: 'Invalid email address' }),
             };
         }
 
@@ -37,22 +56,23 @@ exports.handler = async (event) => {
             }
         );
 
+        console.log('reCAPTCHA response:', recaptchaResponse.data);
+
         if (!recaptchaResponse.data.success) {
             return {
                 statusCode: 400,
-                body: JSON.stringify({ message: 'reCAPTCHA validation failed. Please try again.' }),
+                body: JSON.stringify({ message: 'reCAPTCHA validation failed' }),
             };
         }
 
-        // Set up the email content
+        // Send email
         const msg = {
             to: 'Mpreston@7millionmedia.com',
             from: 'Mpreston@7millionmedia.com',
             subject: `New Contact Form Submission from ${name}`,
-            text: `You received a new message from your contact form:\n\nName: ${name}\nEmail: ${email}\nMessage: ${comment}`,
+            text: `Name: ${name}\nEmail: ${email}\nMessage: ${comment}`,
         };
 
-        // Send the email
         await sgMail.send(msg);
 
         return {
@@ -60,8 +80,7 @@ exports.handler = async (event) => {
             body: JSON.stringify({ message: 'Email sent successfully' }),
         };
     } catch (error) {
-        console.error('Error sending email:', error);
-
+        console.error('Error in contact function:', error);
         return {
             statusCode: 500,
             body: JSON.stringify({ message: 'Failed to send email' }),
