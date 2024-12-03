@@ -7,11 +7,12 @@ document.getElementById("contactForm").addEventListener("submit", async function
     grecaptcha.ready(async function() {
         try {
             const token = await grecaptcha.execute("6LdZf5EqAAAAAIfyoFf59ZWBjSemCDpxaA5GSY6C", { action: "submit" });
+            console.log("reCAPTCHA Token:", token);
 
             // Add the token to the form data
             const formData = new FormData(form);
             formData.append("recaptchaToken", token);
-
+            
             // Convert form data to JSON
             const data = Object.fromEntries(formData.entries());
 
