@@ -5,6 +5,24 @@ const axios = require('axios');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 exports.handler = async (event) => {
+    console.log("Raw Event Body:", event.body); // Log the raw event body
+
+    const { name, email, comment, website, recaptchaToken } = querystring.parse(event.body);
+
+    console.log("Parsed Fields:", { name, email, comment, website, recaptchaToken });
+
+    if (!recaptchaToken) {
+        console.warn("Missing reCAPTCHA Token");
+        return {
+            statusCode: 400,
+            body: JSON.stringify({ message: "Missing reCAPTCHA Token" }),
+        };
+    }
+
+};
+
+
+exports.handler = async (event) => {
     if (event.httpMethod !== 'POST') {
         return {
             statusCode: 405,
