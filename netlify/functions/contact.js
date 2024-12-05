@@ -1,26 +1,7 @@
 const sgMail = require('@sendgrid/mail');
 const querystring = require('querystring');
-const axios = require('axios');
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-
-exports.handler = async (event) => {
-    console.log("Raw Event Body:", event.body); // Log the raw event body
-
-    const { name, email, comment, website, recaptchaToken } = querystring.parse(event.body);
-
-    console.log("Parsed Fields:", { name, email, comment, website, recaptchaToken });
-
-    if (!recaptchaToken) {
-        console.warn("Missing reCAPTCHA Token");
-        return {
-            statusCode: 400,
-            body: JSON.stringify({ message: "Missing reCAPTCHA Token" }),
-        };
-    }
-
-};
-
 
 exports.handler = async (event) => {
     if (event.httpMethod !== 'POST') {
@@ -31,8 +12,8 @@ exports.handler = async (event) => {
     }
 
     try {
-        // Parse form data
-        const { name, email, comment, website, recaptchaToken } = querystring.parse(event.body);
+        // Parse URL-encoded form data
+        const { name, email, comment, website } = querystring.parse(event.body);
 
         // Honeypot check
         if (website) {
@@ -44,53 +25,22 @@ exports.handler = async (event) => {
         }
 
         // Validate required fields
-        if (!name || !email || !comment || !recaptchaToken) {
-            console.warn('Missing fields:', { name, email, comment, recaptchaToken });
+        if (!name || !email || !comment) {
             return {
                 statusCode: 400,
                 body: JSON.stringify({ message: 'All fields are required' }),
             };
         }
 
-        // Validate email format
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            console.warn('Invalid email address:', email);
-            return {
-                statusCode: 400,
-                body: JSON.stringify({ message: 'Invalid email address' }),
-            };
-        }
-
-        // reCAPTCHA Validation
-        const recaptchaSecret = process.env.RECAPTCHA_SECRET_KEY;
-        const recaptchaResponse = await axios.post(
-            `https://www.google.com/recaptcha/api/siteverify`,
-            {},
-            {
-                params: {
-                    secret: recaptchaSecret,
-                    response: recaptchaToken,
-                },
-            }
-        );
-
-        console.log('reCAPTCHA response:', recaptchaResponse.data);
-
-        if (!recaptchaResponse.data.success) {
-            return {
-                statusCode: 400,
-                body: JSON.stringify({ message: 'reCAPTCHA validation failed' }),
-            };
-        }
-
-        // Send email
+        // Set up the email content
         const msg = {
             to: 'Mpreston@7millionmedia.com',
             from: 'Mpreston@7millionmedia.com',
             subject: `New Contact Form Submission from ${name}`,
-            text: `Name: ${name}\nEmail: ${email}\nMessage: ${comment}`,
+            text: `You received a new message from your contact form:\n\nName: ${name}\nEmail: ${email}\nMessage: ${comment}`,
         };
 
+        // Send the email
         await sgMail.send(msg);
 
         return {

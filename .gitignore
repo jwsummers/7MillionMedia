@@ -13,3 +13,5 @@ yarn-error.log*
 
 # OS-Specific Files
 Thumbs.db  # Windows thumbnail cache files
+# Local Netlify folder
+.netlify

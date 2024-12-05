@@ -1,54 +1,40 @@
 document.getElementById("contactForm").addEventListener("submit", async function(event) {
-    console.log("Form submission triggered"); // Log when the form is submitted
-    event.preventDefault();
+    event.preventDefault(); // Prevent the default form submission
 
-    const form = this;
+    const form = this; // Reference to the form element
 
-    grecaptcha.ready(async function() {
-        console.log("reCAPTCHA is ready"); // Log when reCAPTCHA is ready
+    // Collect form data
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
 
-        try {
-            const token = await grecaptcha.execute("6LdZf5EqAAAAAIfyoFf59ZWBjSemCDpxaA5GSY6C", { action: "submit" });
-            console.log("Generated reCAPTCHA Token:", token); // Log the generated token
+    try {
+        // Send form data to the serverless function
+        const response = await fetch(form.action, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+        });
 
-            // Add token to form data
-            const formData = new FormData(form);
-            formData.append("recaptchaToken", token);
-            console.log("Form Data with Token:", Object.fromEntries(formData.entries())); // Log form data
+        const result = await response.json();
+        const formResponse = document.getElementById("formResponse");
 
-            // Convert to JSON
-            const data = Object.fromEntries(formData.entries());
+        if (response.ok) {
+            formResponse.textContent = result.message;
+            formResponse.classList.remove("d-none");
+            formResponse.classList.add("alert", "alert-success");
 
-            // Send data to server
-            const response = await fetch(form.action, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data),
-            });
-
-            const result = await response.json();
-            console.log("Server Response:", result); // Log server response
-
-            const formResponse = document.getElementById("formResponse");
-
-            if (response.ok) {
-                formResponse.textContent = result.message;
-                formResponse.classList.remove("d-none");
-                formResponse.classList.add("alert", "alert-success");
-
-                // Clear form
-                form.reset();
-            } else {
-                formResponse.textContent = result.message || "An error occurred.";
-                formResponse.classList.remove("d-none");
-                formResponse.classList.add("alert", "alert-danger");
-            }
-        } catch (error) {
-            console.error("Error during reCAPTCHA execution or form submission:", error);
-            const formResponse = document.getElementById("formResponse");
-            formResponse.textContent = "An error occurred while submitting the form.";
+            // Clear the form fields
+            form.reset();
+        } else {
+            formResponse.textContent = result.message || "An error occurred.";
             formResponse.classList.remove("d-none");
             formResponse.classList.add("alert", "alert-danger");
         }
-    });
+    } catch (error) {
+        console.error("Form submission error:", error);
+        const formResponse = document.getElementById("formResponse");
+        formResponse.textContent = "An error occurred while submitting the form.";
+        formResponse.classList.remove("d-none");
+        formResponse.classList.add("alert", "alert-danger");
+    }
 });
