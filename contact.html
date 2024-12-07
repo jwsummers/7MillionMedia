@@ -180,6 +180,10 @@
     <div style="display: none;">
         <input type="text" name="website" tabindex="-1" autocomplete="off">
     </div>
+    <input type="hidden" id="formTimestamp" name="formTimestamp">
+<script>
+    document.getElementById("formTimestamp").value = Date.now();
+</script>
     <div class="position-relative form-group mb-30px d-flex flex-md-row flex-column">
         <label for="name" class="form-label fs-60 md-fs-50 ls-minus-1px text-dark-gray fw-500 mb-0 me-30px">My name is</label>
         <div class="position-relative col">
@@ -200,7 +204,9 @@
             <textarea class="ps-0 border-radius-0px border-color-dark-gray bg-transparent form-control" name="comment" id="comment" placeholder="Enter your project details here" rows="3" required></textarea>
             <span class="form-icon"><i class="bi bi-chat-square-dots icon-small"></i></span>
         </div>
-    </div>
+    </div>  
+    <!-- reCAPTCHA widget -->
+    <div class="g-recaptcha mt-30px" data-sitekey="6LfZvJMqAAAAAOHa46hMcI_f6ZIG2ufbZaf-tOLu"></div>
     <div class="row mt-40px align-items-center">
         <div class="col-md-5 col-sm-5 text-center text-sm-end xs-mt-25px">
             <button class="btn btn-dark-gray btn-small btn-box-shadow submit" type="submit">Send message</button>
@@ -271,6 +277,9 @@
         </footer>
         <!-- end footer -->
         <!-- javascript libraries -->
+                               <!-- Add the reCAPTCHA script -->
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
          <script src="js/form.js"></script>
         <script type="text/javascript" src="js/jquery.js"></script>
         <script type="text/javascript" src="js/vendors.min.js"></script>
