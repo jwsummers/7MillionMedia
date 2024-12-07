@@ -1,5 +1,17 @@
+
+
+
+
+
+
+
+
+
+
 (function ($) {
 
+    
+    
     "use strict";
     /* ===================================
      Change variables value as per your need 
@@ -66,6 +78,12 @@
     /* ===================================
      Header
      ====================================== */
+
+
+
+     
+
+
 
     // Mobile menu - modern style
     var mobileStyle = $('body').attr('data-mobile-nav-style');
@@ -3759,3 +3777,26 @@ function initMap() {
         }
     });
 }
+
+    // Get a reference to the Scroll-to-Top button
+    const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+
+    // Add scroll event listener
+    window.addEventListener('scroll', () => {
+        const scrollY = window.scrollY || document.documentElement.scrollTop;
+
+        // Show button if user scrolls 400px down
+        if (scrollY > 400) {
+            scrollToTopBtn.style.display = 'block';
+        } else {
+            scrollToTopBtn.style.display = 'none';
+        }
+    });
+
+    // Scroll to top when button is clicked
+    scrollToTopBtn.addEventListener('click', () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
