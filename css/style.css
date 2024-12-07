@@ -19355,5 +19355,44 @@ footer .footer-navbar .nav-item:last-child a {
   max-height: 55px !important;
 }
 
+   /* Default: Hide the arrows */
+   .mobile-arrow {
+    display: none;
+}
+
+/* Mobile-specific styles */
+@media (max-width: 768px) {
+    .mobile-arrow {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        top: 50%; /* Center vertically */
+        transform: translateY(-50%);
+        width: 40px;
+        height: 40px;
+        background-color: rgba(0, 0, 0, 0.5);
+        color: white;
+        font-size: 24px;
+        border-radius: 50%;
+        z-index: 1000;
+        cursor: pointer;
+        user-select: none;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .mobile-arrow-left {
+        left: 15px; /* Position on the left side */
+    }
+
+    .mobile-arrow-right {
+        right: 15px; /* Position on the right side */
+    }
+
+    .mobile-arrow:hover {
+        background-color: rgba(0, 0, 0, 0.7);
+    }
+}
+
 
 
