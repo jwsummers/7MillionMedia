@@ -3800,3 +3800,32 @@ function initMap() {
             behavior: 'smooth'
         });
     });
+
+        // Function to open the lightbox
+        function openLightbox(imgElement) {
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightbox-img');
+            lightbox.style.display = 'flex';
+            lightboxImg.src = imgElement.src;
+        }
+    
+        // Function to close the lightbox
+        function closeLightbox() {
+            document.getElementById('lightbox').style.display = 'none';
+        }
+  
+        
+        
+          var swiper = new Swiper('.swiper-container', {
+            loop: true,
+            autoplay: {
+              delay: 3000,
+              disableOnInteraction: false,
+            },
+            navigation: {
+              nextEl: '.swiper-button-next',
+              prevEl: '.swiper-button-prev',
+            },
+            spaceBetween: 10,
+          });
+        
